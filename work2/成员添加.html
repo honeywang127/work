@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>成员信息</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="libs/common.css">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <h3 class="wq-title">
+            208-html成员信息
+            <button type="button" class="btnadd" data-toggle="modal" data-target=".wq-add">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                添加成员
+            </button>
+        </h3>
+        <!-- 添加错题部分 -->
+        <div class="modal fade wq-add">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <!--细节划分-->
+                    <h4>请详细填写重点信息:</h4>
+                    <div class="form-group">
+                        <label for="wq-content">姓名</label>
+                        <input type="text" class="form-control" id="wq-content" placeholder="" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="wq-where">性别</label>
+                        <textarea id="wq-where" class="form-control" rows="2" placeholder=""
+                            value="闭包的原理略有模糊现在已经了解"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="wq-idea">年龄</label>
+                        <textarea id="wq-idea" class="form-control" rows="2" placeholder="" value=""></textarea>
+                    </div>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-success" data-dismiss="modal"
+                            id="wq-save-question">提交</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--错题表格-->
+        <div class="row">
+            <table class="table table-bordered table-hover wq-main-table ">
+                <!--错题项目-->
+                <thead>
+                    <tr>
+                        <th class="col-md-1 text-center">#</th>
+                        <th class="col-md-3 text-center">姓名</th>
+                        <th class="col-md-3 text-center">性别</th>
+                        <th class="col-md-3 text-center">年龄</th>
+                        <th class="col-md-1 text-center">删除</th>
+                        <th class="col-md-1 text-center">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+
+                    <!--<tr class="text-center middle">
+						<td>**索引**</td>
+						<td>**标题**</td>
+						<td>**副标题**</td>
+						<td>
+							<a 
+								href="#" 
+								data-toggle="popover"
+								data-content="**过长内容详情(bootstrap会处理点击显示)**" 
+							>**过长隐藏内容**
+							</a>
+						</td>
+						<td>
+							<button class="btn delBtn">删除</button>
+						</td>
+						<td>
+							<button class="btn">
+								<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+							</button>
+						</td>
+					</tr>-->
+
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        function $(id) {
+            return document.getElementById(id);
+        }
+
+        let name = $("wq-content");
+        let xinb = $("wq-where");
+        let age = $("wq-idea");
+        let wq_btn = $("wq-save-question");
+        let tbody = $("tbody");
+        axios.get("http://localhost:3000/products").then(res => {
+            console.log(res.data);
+            var data=res.data;
+            let str = "";
+        for (let i = 0; i < data.length; i++) {
+            console.log(data[i].id);
+            str += `
+            <tr class="text-center middle">
+            <td>${data[i].id}</td>
+            <td>${data[i].name}</td>
+            <td>${data[i].xinb}</td>
+            <td>${data[i].age}</td>
+            <td>
+                <button class="btn delBtn" data-id="${data[i].id}">删除</button>
+            </td>
+            <td>
+                <button class="btn">
+                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                </button>
+            </td>
+        </tr>
+            `;
+        }
+
+        tbody.innerHTML = str;
+
+        let btn = document.querySelectorAll(".btn");
+            for (let i = 0; i < btn.length; i++) {
+                btn[i].onclick = function () {
+                    let id = btn[i].getAttribute("data-id");
+                    axios.delete(`http://localhost:3000/products/${id}`).then(res => {
+                        location.reload();
+                    });
+                }
+            }
+
+            //添加功能
+            // let link = document.getElementById("link");
+            // console.log(link);
+            // console.log(name);
+            wq_btn.onclick = function () {
+                axios.post("http://localhost:3000/products", {
+                    name: name.value,
+                    xinb: xinb.value,
+                    age: age.value,
+
+                }).then(res => {
+                      location.reload();
+                });
+            }
+
+
+        
+
+        });
+    </script>
+    <script src="libs/jquery-1.11.0.js"></script>
+    <script src="libs/bootstrap.js" type="text/javascript" charset="utf-8"></script>
+    
+</body>
+
+</html>
